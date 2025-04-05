@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>چت با هوش مصنوعی</title>
+  <style>
+    body { font-family: sans-serif; background: #f1f1f1; direction: rtl; padding: 30px; }
+    #chat-box { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; }
+    .msg { margin: 10px 0; }
+    .user { text-align: right; color: blue; }
+    .ai { text-align: left; color: green; }
+    textarea { width: 100%; height: 80px; }
+    button { padding: 10px 20px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div id="chat-box">
+    <div id="messages"></div>
+    <textarea id="prompt" placeholder="سوالت رو بنویس..."></textarea>
+    <button onclick="sendMessage()">ارسال</button>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const prompt = document.getElementById("prompt").value;
+      if (!prompt) return;
+
+      const messagesDiv = document.getElementById("messages");
+      messagesDiv.innerHTML += `<div class="msg user">${prompt}</div>`;
+      document.getElementById("prompt").value = "";
+
+      const res = await fetch("http://localhost:3000/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ prompt })
+      });
+
+      const data = await res.json();
+      messagesDiv.innerHTML += `<div class="msg ai">${data.response}</div>`;
+    }
+  </script>
+</body>
+</html>
